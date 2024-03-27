@@ -1,7 +1,6 @@
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'dart:math';
 import 'dart:async';
 import 'dart:io';
@@ -50,6 +49,8 @@ class _MyHomePageState extends State<MyHomePage> {
       TextEditingController(); // Controller for TextFormField
   TextEditingController email = TextEditingController();
   String password = '';
+  String uname = '';
+  String uemail = '';
   String ip = '';
   String text = '';
   String data = '';
@@ -59,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     fetchIP();
     DatabaseService();
+    getUserData();
   }
 
   // NCAT TESTING
@@ -155,6 +157,24 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  getUserData() async {
+    try {
+      List<Map<String, dynamic>> data = await databaseService.getUsers();
+      if (data.isNotEmpty) {
+        setState(() {
+          uname =
+              data[0]['username']; // Assuming 'username' is a key in the map
+          uemail = data[1]['email'];
+        });
+      } else {
+        // Handle case where no users were retrieved
+      }
+    } catch (e) {
+      // Handle any errors that occur during database retrieval
+      logger.e("Error fetching user data: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,7 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onPressed: () {
                   databaseService.addUser(username.text, email.text);
-                  getUserDatas();
+                  //getUserDatas();
                 },
                 child: Text(
                   "Salvesta",
@@ -236,6 +256,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: Text(
                   text,
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              SizedBox(height: 120),
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.indigo,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'Sinu nimi : $uname',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              SizedBox(height: 50),
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.indigo,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'Sinu email : $uemail',
                   style: TextStyle(
                     color: Colors.green,
                     fontSize: 18,
@@ -291,6 +341,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+        color: Colors.indigo[700],
       ),
     );
   }

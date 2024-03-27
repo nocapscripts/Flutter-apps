@@ -57,6 +57,22 @@ class DatabaseService {
   Future<void> addUser(String username, String email) async {
     try {
       final db = await database;
+
+      // Check if the username already exists
+      List<Map<String, dynamic>> existingUsers = await db.query(
+        'users',
+        where: 'username = ?',
+        whereArgs: [username],
+      );
+
+      // If there are existing users with the same username, handle accordingly
+      if (existingUsers.isNotEmpty) {
+        logger.w('Username $username already exists');
+        // Handle the case where the username already exists, e.g., show an error message to the user
+        return;
+      }
+
+      // If the username doesn't exist, proceed with adding the new user
       await db.insert('users', {'username': username, 'email': email});
       logger.d("Inserted and created");
     } catch (e) {
@@ -68,6 +84,7 @@ class DatabaseService {
   Future<List<Map<String, dynamic>>> getUsers() async {
     try {
       final db = await database;
+
       return await db.query('users');
     } catch (e) {
       logger.e("Error fetching users: $e");
