@@ -4,7 +4,6 @@ import 'package:memoapp/helpers/memo_database_helper.dart';
 
 class MemoDetailScreen extends StatefulWidget {
   final Memo? memo; // Memo to display/edit
-
   final Function refreshMemoList;
 
   const MemoDetailScreen({
@@ -63,7 +62,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.memo != null ? 'Edit Memo' : 'Add Memo'),
+        title: Text(widget.memo != null ? 'Muuda märget' : 'Lisa uus märge'),
         actions: [
           IconButton(
             onPressed: () async {
@@ -73,20 +72,52 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Pealkiri',
+                style: TextStyle(color: Colors.green),
+              ),
+            ),
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Color.fromARGB(255, 95, 95, 95),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: TextStyle(color: Colors.white),
             ),
             SizedBox(height: 16.0),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Kirjeldus',
+                style: TextStyle(color: Colors.green),
+              ),
+            ),
             TextField(
               controller: _contentController,
-              decoration: InputDecoration(labelText: 'Content'),
-              maxLines: null,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color.fromARGB(255, 95, 95, 95),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: TextStyle(color: Colors.white),
+              maxLines: 10,
+              keyboardType: TextInputType.multiline,
+              textInputAction: TextInputAction.newline,
             ),
           ],
         ),

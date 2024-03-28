@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memoapp/models/screens/memo_list_screen.dart';
-import 'package:memoapp/l10n/locales.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,20 +12,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Memo Notes',
+      title: 'Märkmed',
       theme: ThemeData(
         primarySwatch: Colors.indigo,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          background: Color.fromARGB(
+              255, 0, 0, 0), // Set your desired background color here
+        ),
       ),
       // Set MemoListScreen as the initial screen
-      home: MemoListScreen(),
+      home: MemoListScreen(
+        titleTranslation: 'Märkmed', // Pass translated string directly
+        notesTranslation: 'Märkmed', // Pass translated string directly
+        createdTranslation:
+            'Aeg: {createdAt}', // Pass translated string directly
+      ),
       // Define supported locales and localization delegates
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         // Add your app's specific localization delegates
-        // Assuming you have defined them in locales.dart
-        AppLocalizations.delegate,
+        // You can add more delegates here if needed
       ],
       supportedLocales: [
         const Locale('en', 'US'), // English

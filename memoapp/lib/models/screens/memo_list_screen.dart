@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:memoapp/models/memo.dart';
 import 'package:memoapp/helpers/memo_database_helper.dart';
 import 'package:memoapp/models/screens/memo_detail_screen.dart';
-import 'package:memoapp/l10n/locales.dart';
 
 class MemoListScreen extends StatefulWidget {
-  const MemoListScreen({Key? key}) : super(key: key);
+  final String titleTranslation;
+  final String notesTranslation;
+  final String createdTranslation;
+
+  const MemoListScreen({
+    Key? key,
+    required this.titleTranslation,
+    required this.notesTranslation,
+    required this.createdTranslation,
+  }) : super(key: key);
 
   @override
   _MemoListScreenState createState() => _MemoListScreenState();
@@ -36,65 +44,86 @@ class _MemoListScreenState extends State<MemoListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context).translate('title') ?? 'Notes',
+          widget.titleTranslation,
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: refreshMemoList,
-        child: FutureBuilder<List<Memo>>(
-          future: _futureMemos,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              final memos = snapshot.data!;
-              if (memos.isEmpty) {
-                return Center(
-                  child: Text(
-                    AppLocalizations.of(context).translate('title') ??
-                        'Memo Notes',
-                  ),
-                );
-              }
-              return ListView.builder(
-                itemCount: memos.length,
-                itemBuilder: (context, index) {
-                  final memo = memos[index];
-                  return Dismissible(
-                    key: Key(memo.id.toString()),
-                    onDismissed: (direction) {
-                      _deleteMemo(memo.id);
-                    },
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      child: const Icon(Icons.delete, color: Colors.yellow),
-                    ),
-                    child: ListTile(
-                      title: Text(memo.title),
-                      subtitle: Text(
-                        AppLocalizations.of(context).translate('created') ??
-                            "Created: '${memo.createdAt}'",
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MemoDetailScreen(
-                              memo: memo,
-                              refreshMemoList: refreshMemoList,
-                            ),
-                          ),
-                        );
-                      },
+      body: Container(
+        color:
+            const Color.fromARGB(255, 14, 14, 14), // Set gray background color
+        child: RefreshIndicator(
+          onRefresh: refreshMemoList,
+          child: FutureBuilder<List<Memo>>(
+            future: _futureMemos,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Viga: ${snapshot.error}'));
+              } else {
+                final memos = snapshot.data!;
+                if (memos.isEmpty) {
+                  return Center(
+                    child: Text(
+                      widget.notesTranslation,
+                      style: TextStyle(
+                          color: Colors.black), // Set text color to black
                     ),
                   );
-                },
-              );
-            }
-          },
+                }
+                return ListView.builder(
+                  itemCount: memos.length,
+                  itemBuilder: (context, index) {
+                    final memo = memos[index];
+                    return Dismissible(
+                      key: Key(memo.id.toString()),
+                      onDismissed: (direction) {
+                        _deleteMemo(memo.id);
+                      },
+                      background: Container(
+                        color: const Color.fromARGB(255, 95, 6, 0),
+                        alignment: Alignment.centerRight,
+                        child: const Icon(Icons.delete, color: Colors.yellow),
+                      ),
+                      child: Card(
+                        color:
+                            Colors.white, // Set white background for list item
+                        elevation: 2, // Add elevation for shadow effect
+                        margin:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            memo.title,
+                            style: TextStyle(
+                                color: Colors.black), // Set text color to black
+                          ),
+                          subtitle: Text(
+                            widget.createdTranslation.replaceAll(
+                                '{createdAt}', memo.createdAt.toString()),
+                            style: TextStyle(
+                                color: Colors.black), // Set text color to black
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MemoDetailScreen(
+                                  memo: memo,
+                                  refreshMemoList: refreshMemoList,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+            },
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -109,6 +138,7 @@ class _MemoListScreenState extends State<MemoListScreen> {
           );
         },
         child: const Icon(Icons.add),
+        backgroundColor: Colors.teal,
       ),
     );
   }
